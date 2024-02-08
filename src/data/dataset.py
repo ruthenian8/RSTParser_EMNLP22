@@ -168,11 +168,6 @@ class RSTDT(Dataset):
             if data["doc_id"] != "wsj_1189":  # check conversion
                 assert bi_rst_tree == AttachTree.convert_to_rst(attach_tree)
 
-            tokenized_edu_strings = []
-
-            data["tokenized_edu_strings"] = [i.split() for i in data["edu_strings"]]
-            data["edu_starts_sentence"] = [False for i in data["edu_strings"]]
-
             doc = Doc.from_data(data)
             dataset.append(doc)
 
