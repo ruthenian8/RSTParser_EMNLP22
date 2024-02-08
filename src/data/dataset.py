@@ -169,20 +169,9 @@ class RSTDT(Dataset):
                 assert bi_rst_tree == AttachTree.convert_to_rst(attach_tree)
 
             tokenized_edu_strings = []
-            edu_starts_sentence = []
 
-            tokens = data["tokens"]
-            edu_start_indices = data["edu_start_indices"]
-            sent_id, token_id, _ = edu_start_indices[0]
-            for next_sent_id, next_token_id, _ in edu_start_indices[1:] + [(-1, -1, -1)]:
-                end_token_id = next_token_id if token_id < next_token_id else None
-                tokenized_edu_strings.append(tokens[sent_id][token_id:end_token_id])
-                edu_starts_sentence.append(token_id == 0)
-                sent_id = next_sent_id
-                token_id = next_token_id
-
-            data["tokenized_edu_strings"] = tokenized_edu_strings
-            data["edu_starts_sentence"] = edu_starts_sentence
+            data["tokenized_edu_strings"] = [i.split() for i in data["edu_strings"]]
+            data["edu_starts_sentence"] = [False for i in data["edu_strings"]]
 
             doc = Doc.from_data(data)
             dataset.append(doc)
