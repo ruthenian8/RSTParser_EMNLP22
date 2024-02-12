@@ -33,8 +33,9 @@ class BertEncoder(Encoder):
         self.tokenizer.deprecation_warnings[
             "sequence-length-is-longer-than-the-specified-maximum"
         ] = True
-        self.tokenizer.add_special_tokens({"rstdt": "<rstdt>", "instrdt": "<instrdt>"})
+        num_added_toks = self.tokenizer.add_tokens(["<rstdt>", "<instrdt>"], special_tokens=True)
         self.model = AutoModel.from_pretrained(model_name)
+        self.model.resize_token_embeddings(len(self.tokenizer))
 
     @classmethod
     def from_config(cls, config):
