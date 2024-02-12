@@ -25,6 +25,7 @@ class ClassifierBase(pl.LightningModule):
         disable_lr_schedule: bool = False,
         disable_org_sent: bool = False,
         disable_org_para: bool = False,
+        use_special_token: str = "",
     ):
         super(ClassifierBase, self).__init__()
         self.save_hyperparameters()
@@ -47,7 +48,7 @@ class ClassifierBase(pl.LightningModule):
         self.met_ori_parseval_oracle = OriginalParseval()
 
         self.parser = None
-        self.encoder = BertEncoder(bert_model_name, bert_max_length, bert_stride)
+        self.encoder = BertEncoder(bert_model_name, bert_max_length, bert_stride, use_special_token)
 
         self.disable_org_sent = disable_org_sent
         self.disable_org_para = disable_org_para
@@ -73,6 +74,7 @@ class ClassifierBase(pl.LightningModule):
             "disable_lr_schedule": config.disable_lr_schedule,
             "disable_org_sent": config.disable_org_sent,
             "disable_org_para": config.disable_org_para,
+            "use_special_token": config.use_special_token,
         }
 
     def set_parser(self, parser):
