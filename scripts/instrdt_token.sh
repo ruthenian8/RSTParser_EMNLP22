@@ -5,7 +5,7 @@ set -x
 DATASET=instrdt
 DATA_DIR=./data/instrdt
 SAVE_DIR=./models/instrdt
-LOAD_DIR=./models/rstdt/rstdt/rstdt_token_5
+CKPT=/content/RSTParser_EMNLP22/models/rstdt/rstdt_token_5/last.ckpt
 PARSER_TYPE=shift_reduce_v1
 BERT_TYPE=deberta-base
 LR=1e-5
@@ -24,7 +24,7 @@ for SEED in 0 1 2; do
         --accumulate-grad-batches 1 \
         --num-workers 0 \
         --disable-lr-schedule \
-        --train-from $LOAD_DIR/last.ckpt \
+        --train-from $CKPT \
         --lr $LR \
         --num-gpus $NUM_GPUS \
         --data-dir $DATA_DIR \
