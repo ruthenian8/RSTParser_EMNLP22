@@ -26,6 +26,7 @@ for SEED in 0 1 2; do
         --accumulate-grad-batches 1 \
         --num-workers 0 \
         --disable-lr-schedule \
+        --disable-early-stopping \
         --lr $LR \
         --num-gpus $NUM_GPUS \
         --data-dir $DATA_DIR \
