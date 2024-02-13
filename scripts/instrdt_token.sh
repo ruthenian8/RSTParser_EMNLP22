@@ -16,6 +16,7 @@ for SEED in 0 1 2; do
     VERSION=$SEED
 
     python src/train.py \
+        --corpus InstrDT \
         --model-type $PARSER_TYPE \
         --bert-model-name $BERT_TYPE \
         --batch-unit-type span_fast \
