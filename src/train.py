@@ -45,11 +45,6 @@ def main():
         help="file name of valiation file",
     )
     parser.add_argument(
-        "--train-from",
-        type=Path,
-        help="Name of checkpoint dir",
-    )
-    parser.add_argument(
         "--test-file", type=Path, default="test.json", help="file name of test dataset"
     )
 
