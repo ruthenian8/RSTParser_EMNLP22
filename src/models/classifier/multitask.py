@@ -33,7 +33,7 @@ class MultitaskSRClassifierV1(ShiftReduceClassifierBase):
             embed_dim, self.hidden_dim, len(self.rel_vocab), self.dropout_p
         )
         self.out_subset = FeedForward(
-            embed_dim, self.hidden_dim, 2, self.dropout_p
+            self.encoder.get_embed_dim(), self.hidden_dim, 2, self.dropout_p
         )
 
         assert self.act_vocab["<pad>"] == self.nuc_vocab["<pad>"] == self.rel_vocab["<pad>"]
@@ -59,7 +59,7 @@ class MultitaskSRClassifierV1(ShiftReduceClassifierBase):
                 embedding = torch.cat((embedding, org_emb), dim=0)
 
             span_embeddings.append(embedding)
-
+        special_token_embeddings = special_token_embeddings.repeat(len(span_embeddings), 1)
         span_embeddings = torch.stack(span_embeddings, dim=0)
         # predict label scores for act_nuc and rel
         act_scores = self.out_linear_action(span_embeddings)

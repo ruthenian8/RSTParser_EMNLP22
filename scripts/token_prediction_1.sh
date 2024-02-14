@@ -5,7 +5,7 @@ set -x
 DATASET=rstdt
 DATA_DIR=./data/rstdt
 SAVE_DIR=./models/rstdt
-PARSER_TYPE=shift_reduce_v1
+PARSER_TYPE=multitask
 BERT_TYPE=deberta-base
 LR=1e-5
 NUM_GPUS=1
