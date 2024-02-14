@@ -156,8 +156,8 @@ class BertEncoder(Encoder):
 
         input_ids = torch.cat(input_ids, dim=0)
         embeddings = torch.cat(embeddings, dim=0)
-        cls_embeddings = outputs.last_hidden_state[:, 0, :]
-        special_token_embeddings = outputs.last_hidden_state[:, 1, :]
+        cls_embeddings = outputs.last_hidden_state[-1, 0, :]
+        special_token_embeddings = outputs.last_hidden_state[-1, 1, :]
 
         bert_output = {
             "input_ids": input_ids,
