@@ -6,10 +6,12 @@ from models.classifier.shift_reduce_classifier_v3 import ShiftReduceClassifierV3
 from models.classifier.top_down_classifier_base import TopDownClassifierBase
 from models.classifier.top_down_classifier_v1 import TopDownClassifierV1
 from models.classifier.top_down_classifier_v2 import TopDownClassifierV2
+from models.classifier.multitask import MultitaskSRClassifierV1
 
 
 class Classifiers:
     classifier_dict = {
+        "multitask": MultitaskSRClassifierV1,
         "top_down_v1": TopDownClassifierV1,
         "top_down_v2": TopDownClassifierV2,
         "shift_reduce_v1": ShiftReduceClassifierV1,
@@ -33,4 +35,5 @@ __all__ = [
     "ShiftReduceClassifierV1",
     "ShiftReduceClassifierV2",
     "ShiftReduceClassifierV3",
+    "MultitaskSRclassifierV1"
 ]

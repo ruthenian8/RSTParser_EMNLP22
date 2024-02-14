@@ -15,6 +15,7 @@ class Parsers:
         "shift_reduce_v1": ShiftReduceParserV1,
         "shift_reduce_v2": ShiftReduceParserV2,
         "shift_reduce_v3": ShiftReduceParserV3,
+        "multitask": ShiftReduceParserV1,
     }
 
     @classmethod

@@ -58,6 +58,7 @@ def main():
             "shift_reduce_v1",
             "shift_reduce_v2",
             "shift_reduce_v3",
+            "multitask",
         ],
         help="model type",
     )
