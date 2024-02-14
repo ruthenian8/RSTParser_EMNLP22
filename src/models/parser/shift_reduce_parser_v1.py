@@ -29,6 +29,8 @@ class ShiftReduceParserV1(ShiftReduceParserBase):
         action_vocab = dataset.action_vocab
         nucleus_vocab = dataset.nucleus_vocab
         relation_vocab = dataset.relation_vocab
+        # Use 0 for one subset and 1 for another
+        subset = bool(self.classifier.encoder.special_token == "<instrdt>")
 
         samples = []
         for doc in dataset:
@@ -46,7 +48,7 @@ class ShiftReduceParserV1(ShiftReduceParserBase):
                 rel_idx = relation_vocab[rel]
                 org_feat = self.get_organization_features(s1, s2, q1, doc)
                 xs.append({"s1": s1, "s2": s2, "q1": q1})
-                ys.append({"act": act_idx, "nuc": nuc_idx, "rel": rel_idx})
+                ys.append({"act": act_idx, "nuc": nuc_idx, "rel": rel_idx, "subset": subset})
                 fs.append({"org": org_feat})
                 state.operate(act, nuc, rel)
 

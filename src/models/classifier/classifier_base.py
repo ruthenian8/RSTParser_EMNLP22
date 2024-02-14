@@ -26,9 +26,12 @@ class ClassifierBase(pl.LightningModule):
         disable_org_sent: bool = False,
         disable_org_para: bool = False,
         use_special_token: str = "",
+        model_subsets: bool = True,
     ):
         super(ClassifierBase, self).__init__()
         self.save_hyperparameters()
+
+        self.model_subsets = model_subsets
 
         self.lr = lr
         self.lr_for_encoder = lr_for_encoder
@@ -75,6 +78,7 @@ class ClassifierBase(pl.LightningModule):
             "disable_org_sent": config.disable_org_sent,
             "disable_org_para": config.disable_org_para,
             "use_special_token": config.use_special_token,
+            "model_subsets": config.model_subsets,
         }
 
     def set_parser(self, parser):

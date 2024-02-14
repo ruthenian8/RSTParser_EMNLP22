@@ -131,6 +131,8 @@ class BertEncoder(Encoder):
         # fix a effects of max_length and stride.
         input_ids = []
         embeddings = []
+
+
         for idx, (_input_ids, _embeddings, attention_mask, special_tokens_mask,) in enumerate(
             zip(
                 inputs["input_ids"],
@@ -154,11 +156,15 @@ class BertEncoder(Encoder):
 
         input_ids = torch.cat(input_ids, dim=0)
         embeddings = torch.cat(embeddings, dim=0)
+        cls_embeddings = outputs.last_hidden_state[:, 0, :]
+        special_token_embeddings = outputs.last_hidden_state[:, 1, :]
 
         bert_output = {
             "input_ids": input_ids,
             "embeddings": embeddings,
             "edu_to_subtokens_mappings": inputs.edu_to_subtokens_mappings,
+            "cls_embeddings": cls_embeddings,
+            "special_token_embeddings": special_token_embeddings,
             # 'edu_strings': doc.get_edu_strings(),
             # 'subtokens': self.tokenizer.convert_ids_to_tokens(input_ids),
         }

@@ -201,7 +201,9 @@ def main():
 
     # random seed
     parser.add_argument("--seed", type=int, default=None, help="integer value for random seed")
+    # our parameters
     parser.add_argument("--use-special-token", type=str, choices=["rstdt", "instrdt", ""], help="Leverage special token for adjustment to datasets")
+    parser.add_argument("--model-subsets", action="store_true", help="Use subset prediction model")
     config = parser.parse_args()
 
     if config.batch_unit_type == "span_fast":
