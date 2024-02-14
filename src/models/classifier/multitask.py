@@ -40,6 +40,7 @@ class MultitaskSRClassifierV1(ShiftReduceClassifierBase):
         pad_idx = self.act_vocab["<pad>"]
         self.pad_idx = pad_idx
         self.xent_loss = nn.CrossEntropyLoss(ignore_index=pad_idx)
+        self.binary_xent_loss = nn.CrossEntropyLoss()
 
     def forward(self, doc: Doc, spans: dict, feats: dict):
         document_embedding = self.encoder(doc)
@@ -83,7 +84,7 @@ class MultitaskSRClassifierV1(ShiftReduceClassifierBase):
         rel_idx = labels["rel"]
         # add subset loss
         subset_idx = labels["subset"]
-        subset_loss = self.xent_loss(output["subset_scores"], subset_idx) if self.model_subsets else torch.zeros_like(1)
+        subset_loss = self.binary_xent_loss(output["subset_scores"], subset_idx) if self.model_subsets else torch.zeros_like(1)
 
         act_loss = self.xent_loss(output["act_scores"], act_idx)
         nuc_loss = self.xent_loss(output["nuc_scores"], nuc_idx)
@@ -93,7 +94,6 @@ class MultitaskSRClassifierV1(ShiftReduceClassifierBase):
             # and xent_loss return NaN.
             nuc_loss = torch.zeros_like(nuc_loss)
             rel_loss = torch.zeros_like(rel_loss)
-            subset_loss = torch.zeros_like(subset_loss)
 
         # add subset loss
         if self.model_subsets:
