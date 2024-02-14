@@ -30,7 +30,7 @@ class ShiftReduceParserV1(ShiftReduceParserBase):
         nucleus_vocab = dataset.nucleus_vocab
         relation_vocab = dataset.relation_vocab
         # Use 0 for one subset and 1 for another
-        subset = bool(self.classifier.encoder.special_token == "<instrdt>")
+        subset = int(self.classifier.encoder.special_token == "<instrdt>")
 
         samples = []
         for doc in dataset:
