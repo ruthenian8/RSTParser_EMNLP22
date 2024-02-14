@@ -122,6 +122,6 @@ class MultitaskSRClassifierV1(ShiftReduceClassifierBase):
         act_scores = self.out_linear_action(embedding)
         nuc_scores = self.out_linear_nucleus(embedding)
         rel_scores = self.out_linear_relation(embedding)
-        subset_scores = self.out_subset(embedding) if self.model_subsets else None
+        _ = self.out_subset(embedding) if self.model_subsets else None
 
-        return act_scores, nuc_scores, rel_scores, subset_scores
+        return act_scores, nuc_scores, rel_scores
