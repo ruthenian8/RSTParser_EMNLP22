@@ -72,7 +72,7 @@ class BertEncoder(Encoder):
             if len(doc.doc_id.split("_")) < 2:
                 special_token = "<news>"
             else:
-                special_token = f"<{doc.doc_id.split("_")[1]}>"
+                special_token = f"<{doc.doc_id.split('_')[1]}>"
             raw_document = special_token + " " + raw_document
 
         inputs = self.tokenizer(

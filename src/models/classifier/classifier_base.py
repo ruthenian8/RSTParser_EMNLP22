@@ -53,6 +53,7 @@ class ClassifierBase(pl.LightningModule):
         self.disable_org_sent = disable_org_sent
         self.disable_org_para = disable_org_para
         self.disable_org_feat = self.disable_org_sent and self.disable_org_para
+        self.use_special_token = use_special_token
 
     @classmethod
     def from_config(cls, config):
