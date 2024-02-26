@@ -18,8 +18,11 @@ class MultitaskSRClassifierV1(ShiftReduceClassifierBase):
         self.act_vocab = self.DATASET.action_vocab
         self.nuc_vocab = self.DATASET.nucleus_vocab
         self.rel_vocab = self.DATASET.relation_vocab
+        self.subset_vocab = self.DATASET.subset_vocab
 
         embed_dim = self.encoder.get_embed_dim() * 3
+        if self.use_special_token:
+            embed_dim += self.encoder.get_embed_dim()
         feat_embed_dim = self.get_org_embedding_dim()
         embed_dim += feat_embed_dim
 
@@ -33,7 +36,7 @@ class MultitaskSRClassifierV1(ShiftReduceClassifierBase):
             embed_dim, self.hidden_dim, len(self.rel_vocab), self.dropout_p
         )
         self.out_subset = FeedForward(
-            self.encoder.get_embed_dim(), self.hidden_dim, 2, self.dropout_p
+            self.encoder.get_embed_dim(), self.hidden_dim, len(self.subset_vocab), self.dropout_p
         )
 
         assert self.act_vocab["<pad>"] == self.nuc_vocab["<pad>"] == self.rel_vocab["<pad>"]
@@ -45,9 +48,8 @@ class MultitaskSRClassifierV1(ShiftReduceClassifierBase):
     def forward(self, doc: Doc, spans: dict, feats: dict):
         document_embedding = self.encoder(doc)
         cls_embeddings = document_embedding["cls_embeddings"]
-        # do averaging for special token embeddings
-        # special_token_embeddings = document_embedding["special_token_embeddings"]
-        special_token_embeddings = (cls_embeddings + document_embedding["special_token_embeddings"]) / 2
+        special_token_embeddings = document_embedding["special_token_embeddings"]
+
         span_embeddings = []
         for span, feat in zip(spans, feats):
             s1_emb = self.encoder.get_span_embedding(document_embedding, span["s1"])
@@ -58,6 +60,9 @@ class MultitaskSRClassifierV1(ShiftReduceClassifierBase):
             if not self.disable_org_feat:
                 org_emb = self.org_embed(feat["org"]).view(-1)
                 embedding = torch.cat((embedding, org_emb), dim=0)
+            
+            if self.use_special_token and special_token_embeddings is not None:
+                embedding = torch.cat((embedding, special_token_embeddings), dim=0)
 
             span_embeddings.append(embedding)
         special_token_embeddings = special_token_embeddings.repeat(len(span_embeddings), 1)
@@ -111,6 +116,7 @@ class MultitaskSRClassifierV1(ShiftReduceClassifierBase):
         }
 
     def predict(self, document_embedding, span: dict, feat: dict):
+        special_token_embeddings = document_embedding["special_token_embeddings"]
         s1_emb = self.encoder.get_span_embedding(document_embedding, span["s1"])
         s2_emb = self.encoder.get_span_embedding(document_embedding, span["s2"])
         q1_emb = self.encoder.get_span_embedding(document_embedding, span["q1"])
@@ -118,6 +124,8 @@ class MultitaskSRClassifierV1(ShiftReduceClassifierBase):
         if not self.disable_org_feat:
             org_emb = self.org_embed(feat["org"]).view(-1)
             embedding = torch.cat((embedding, org_emb), dim=0)
+        if self.use_special_token and special_token_embeddings is not None:
+            embedding = torch.cat((embedding, special_token_embeddings), dim=0)
 
         act_scores = self.out_linear_action(embedding)
         nuc_scores = self.out_linear_nucleus(embedding)

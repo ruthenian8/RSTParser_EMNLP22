@@ -30,6 +30,12 @@ class Dataset(torch.utils.data.Dataset):
         ),
         specials=["<pad>"],
     )
+    subset_vocab = vocab(
+        Counter(
+            ['academic', 'bio', 'conversation', 'fiction', 'interview', 'news', 'reddit', 'speech', 'textbook', 'vlog', 'voyage', 'whow']
+        ),
+        specials=["<pad>"]
+    )
 
     def __init__(self, file_path: Union[Path, str]):
         if isinstance(file_path, str):

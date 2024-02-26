@@ -19,21 +19,22 @@ def complete_model_name(model_name):
 
 
 class BertEncoder(Encoder):
-    def __init__(self, model_name: str, max_length: int = 512, stride: int = 30, use_special_token: str = ""):
+    def __init__(self, model_name: str, max_length: int = 512, stride: int = 30, use_special_token: bool = False):
         super(BertEncoder, self).__init__()
         self.max_length = max_length
         self.stride = stride
 
         model_name = complete_model_name(model_name)
-        self.special_token = ""
-        if use_special_token != "":
-            self.special_token = "<rstdt>" if use_special_token == "rstdt" else "<instrdt>"
+        self.use_special_token = bool(use_special_token)
+        self.special_token = None
+        if use_special_token:
+            self.special_token = "<CLS_SUBSET>"
         self.config = AutoConfig.from_pretrained(model_name)
         self.tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
         self.tokenizer.deprecation_warnings[
             "sequence-length-is-longer-than-the-specified-maximum"
         ] = True
-        num_added_toks = self.tokenizer.add_tokens(["<rstdt>", "<instrdt>"], special_tokens=True)
+        num_added_toks = self.tokenizer.add_tokens(["<CLS_SUBSET>"], special_tokens=True)
         self.model = AutoModel.from_pretrained(model_name)
         self.model.resize_token_embeddings(len(self.tokenizer))
 
@@ -56,7 +57,7 @@ class BertEncoder(Encoder):
 
         # prepend special token to allow adjustment for specific datasets
         # TODO: introduce learning the dataset label using the special token as a training objective
-        if self.special_token:
+        if self.use_special_token and self.special_token:
             raw_document = self.special_token + " " + raw_document
 
         inputs = self.tokenizer(
@@ -87,7 +88,7 @@ class BertEncoder(Encoder):
 
         input_ids = flatten_inputs.input_ids[0]
         # do we need to account for additional token being inserted?
-        if self.special_token:
+        if self.use_special_token and self.special_token:
             input_ids = input_ids[1:]
 
         edu_offset = 0
@@ -157,7 +158,7 @@ class BertEncoder(Encoder):
         input_ids = torch.cat(input_ids, dim=0)
         embeddings = torch.cat(embeddings, dim=0)
         cls_embeddings = outputs.last_hidden_state[-1, 0, :]
-        special_token_embeddings = outputs.last_hidden_state[-1, 1, :]
+        special_token_embeddings = outputs.last_hidden_state[-1, 1, :] if self.use_special_token else None
 
         bert_output = {
             "input_ids": input_ids,

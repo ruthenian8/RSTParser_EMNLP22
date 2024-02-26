@@ -29,8 +29,7 @@ class ShiftReduceParserV1(ShiftReduceParserBase):
         action_vocab = dataset.action_vocab
         nucleus_vocab = dataset.nucleus_vocab
         relation_vocab = dataset.relation_vocab
-        # Use 0 for one subset and 1 for another
-        subset = int(self.classifier.encoder.special_token == "<instrdt>")
+        subset_vocab = dataset.subset_vocab
 
         samples = []
         for doc in dataset:
@@ -41,6 +40,11 @@ class ShiftReduceParserV1(ShiftReduceParserBase):
             act_list, nuc_list, rel_list = self.generate_action_sequence(tree)
             xs, ys, fs = [], [], []
             state = ShiftReduceState(len(tree.leaves()))
+            id_split = doc.doc_id.split("_")
+            if len(id_split) < 2:
+                subset = subset_vocab["<pad>"]
+            else:
+                subset = subset_vocab[id_split[1]]
             for act, nuc, rel in zip(act_list, nuc_list, rel_list):
                 s1, s2, q1 = state.get_state()
                 act_idx = action_vocab[act]
