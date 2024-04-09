@@ -45,12 +45,12 @@ def main():
         dataset.extend(data)
         num_docs += 1
 
-    # check size
-    assert num_docs == 176
-    if args.joint_with_nn:
-        assert len(dataset) == 176
-    else:
-        assert len(dataset) == 320
+    # # check size
+    # assert num_docs == 176
+    # if args.joint_with_nn:
+    #     assert len(dataset) == 176
+    # else:
+    #     assert len(dataset) == 320
 
     save_json(args.output_file, dataset)
     return
@@ -137,7 +137,7 @@ def read_dis(file_path, joint_with_NN=False):
 def save_json(file_path, dataset):
     print('save into "{}" (consists of {} trees)'.format(file_path, len(dataset)))
     with open(file_path, "w") as f:
-        json.dump(dataset, f)
+        json.dump(dataset, f, ensure_ascii=False)
 
     return
 

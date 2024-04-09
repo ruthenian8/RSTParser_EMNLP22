@@ -5,7 +5,7 @@ import pytorch_lightning as pl
 from torch.utils.data import DataLoader
 
 from data.batch import Batch
-from data.dataset import RSTDT, InstrDT
+from data.dataset import RSTDT, InstrDT, PCCDataset
 from models.parser import ParserBase
 
 
@@ -72,6 +72,7 @@ class DataModule(pl.LightningDataModule):
         corpus2DATASET = {
             "RSTDT": RSTDT,
             "InstrDT": InstrDT,
+            "PCC": PCCDataset,
         }
         assert self.corpus in corpus2DATASET
         DATASET = corpus2DATASET[self.corpus]

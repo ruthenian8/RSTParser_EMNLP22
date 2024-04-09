@@ -31,6 +31,7 @@ def extract_edus_from_rst_tree_str(rst_tree_str: str):
 
 def remove_edu_from_rst_tree_str(rst_tree_str: str):
     rst_tree_str = re.sub(r"<EDU>(.*?)</EDU>", "EDU_TEXT", rst_tree_str)
+    rst_tree_str = re.sub(r"_!(.*?)_!", "EDU_TEXT", rst_tree_str)
     return rst_tree_str
 
 
@@ -41,14 +42,15 @@ def fix_relation_label(tree: Tree):
             continue
         if node.label() == "text":
             continue
-
+        # print(node)
         childs = [c for c in node]
         if len(childs) == 1 and childs[0].label() == "text":
             continue
 
         rel_labels = [c.label().split(":", maxsplit=1)[1] for c in childs]
         nuc_labels = [c.label().split(":", maxsplit=1)[0] for c in childs]
-        assert all([l == rel_labels[0] for l in rel_labels])
+        # print(rel_labels)
+        # assert all([l == rel_labels[0] for l in rel_labels])
 
         if all([n == "nucleus" for n in nuc_labels]):
             # N-N

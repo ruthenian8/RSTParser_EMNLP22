@@ -5,7 +5,7 @@ from torch.optim import AdamW
 from transformers import get_linear_schedule_with_warmup
 
 from data.batch import Batch
-from data.dataset import RSTDT, InstrDT
+from data.dataset import RSTDT, InstrDT, PCCDataset
 from metrics import OriginalParseval, RSTParseval
 from models.encoder import BertEncoder
 
@@ -37,6 +37,7 @@ class ClassifierBase(pl.LightningModule):
         corpus2DATASET = {
             "RSTDT": RSTDT,
             "InstrDT": InstrDT,
+            "PCC": PCCDataset,
         }
         assert corpus in corpus2DATASET
         self.DATASET = corpus2DATASET[corpus]

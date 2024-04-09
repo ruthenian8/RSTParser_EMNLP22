@@ -174,6 +174,23 @@ class RSTDT(Dataset):
         return dataset
 
 
+class PCCDataset(RSTDT):
+    def preprocess(self, raw_dataset: List[Dict]):
+        dataset = []
+        for data in raw_dataset:
+            rst_tree = RSTTree.fromstring(data["rst_tree"])
+            bi_rst_tree = rst_tree
+            attach_tree = AttachTree.fromstring(data["attach_tree"])
+            data["attach_tree"] = attach_tree
+            # (wsj_1189 has annotateion error)
+            if data["doc_id"] != "wsj_1189":  # check conversion
+                assert bi_rst_tree == AttachTree.convert_to_rst(attach_tree)
+
+            doc = Doc.from_data(data)
+            dataset.append(doc)
+        return dataset
+
+
 class InstrDT(Dataset):
     relation_vocab = vocab(
         Counter(
