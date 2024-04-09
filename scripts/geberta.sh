@@ -19,10 +19,11 @@ for SEED in 0 1 2; do
     else
         # RUN TRAINING
             python src/train.py \
+                --corpus PCC \
                 --model-type $PARSER_TYPE \
                 --bert-model-name $BERT_TYPE \
                 --batch-unit-type span_fast \
-                --batch-size 5 \
+                --batch-size 25 \
                 --accumulate-grad-batches 1 \
                 --num-workers 0 \
                 --disable-lr-schedule \

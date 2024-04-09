@@ -23,7 +23,7 @@ def main():
     parser.add_argument(
         "--corpus",
         default="RSTDT",
-        choices=["RSTDT", "InstrDT"],
+        choices=["RSTDT", "InstrDT", "PCC"],
         help="corpus type (label set is in src/data/dataset.py)",
     )
     parser.add_argument(
