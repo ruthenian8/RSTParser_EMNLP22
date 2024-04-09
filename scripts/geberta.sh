@@ -40,6 +40,8 @@ for SEED in 0 1 2; do
     # RUN TEST
     if [ -d $SAVE_DIR/$MODEL_NAME/version_$SEED/checkpoints ]; then
         python src/test.py \
+            --corpus PCC \
+            --metrics OriginalParseval \
             --num-workers 0 \
             --data-dir $DATA_DIR \
             --ckpt-dir $SAVE_DIR/$MODEL_NAME/version_$SEED/checkpoints \
