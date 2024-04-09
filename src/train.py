@@ -102,7 +102,9 @@ def main():
             "electra-large-discriminator",
             "mpnet-base",
             "deberta-base",
+            "ikim-uk-essen/geberta-base",
             "deberta-large",
+            "ikim-uk-essen/geberta-large",
         ],
         help="encoder type",
     )
