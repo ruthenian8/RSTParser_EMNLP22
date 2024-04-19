@@ -1,14 +1,14 @@
 import sys
 import os
 import json
-from tree import AttachTree
+from data.tree import AttachTree
 
 PFORMAT_MARGIN = 1000000000
 
 
 class DMRGTree(AttachTree):
     def __init__(self, label: str, children: list):
-        if label == "EDU":
+        if label == "EDU" or label == "text":
             label = "text"
         else:
             nuc, rel = label.split("-", maxsplit=1)

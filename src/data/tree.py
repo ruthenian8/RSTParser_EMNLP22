@@ -173,6 +173,7 @@ class AttachTree(Tree):
 
     def get_brackets(self, eval_types: List[str]):
         brackets = {eval_type: [] for eval_type in eval_types}
+        brackets["children"] = {}
 
         for tp in self.treepositions():
             node = self[tp]
@@ -180,13 +181,13 @@ class AttachTree(Tree):
                 continue  # EDU idx
 
             label = node.label()
-            if label == "text" and len(node) == 1:
+            if label == "text":
                 continue  # leave node
 
-            edu_indices = [int(idx) for idx in node.leaves()]
-            span = (edu_indices[0], edu_indices[-1] + 1)
+            # edu_indices = [int(idx) for idx in node.leaves()]
+            # span = (edu_indices[0], edu_indices[-1] + 1)
+            span = " ".join(node.leaves())
             ns, relation = label.split(":", maxsplit=1)
-
             if "full" in eval_types:
                 brackets["full"].append((span, ns, relation))
             if "rel" in eval_types:
@@ -195,5 +196,7 @@ class AttachTree(Tree):
                 brackets["nuc"].append((span, ns))
             if "span" in eval_types:
                 brackets["span"].append((span))
+            immediate_children = (" ".join(node[(0,)].leaves()), " ".join(node[(1,)].leaves()))
+            brackets["children"][span] = immediate_children
 
         return brackets
