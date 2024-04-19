@@ -4,3 +4,4 @@ en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_
 torchmetrics==0.8.2
 pytorch-lightning == 1.6.3
 transformers >= 4.19.2
+supar @ git+https://github.com/yzhangcs/parser

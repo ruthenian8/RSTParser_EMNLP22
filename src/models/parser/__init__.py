@@ -6,10 +6,12 @@ from models.parser.shift_reduce_parser_v3 import ShiftReduceParserV3
 from models.parser.top_down_parser_base import TopDownParserBase
 from models.parser.top_down_parser_v1 import TopDownParserV1
 from models.parser.top_down_parser_v2 import TopDownParserV2
+from models.parser.aj_parser import AJParser
 
 
 class Parsers:
     parser_dict = {
+        "aj": AJParser,
         "top_down_v1": TopDownParserV1,
         "top_down_v2": TopDownParserV2,
         "shift_reduce_v1": ShiftReduceParserV1,
@@ -25,6 +27,7 @@ class Parsers:
 
 
 __all__ = [
+    "AJParser",
     "ParserBase",
     "TopDownParserBase",
     "TopDownParserV1",

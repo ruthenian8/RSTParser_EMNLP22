@@ -158,12 +158,12 @@ class RSTDT(Dataset):
     def preprocess(self, raw_dataset: List[Dict]):
         dataset = []
         for data in raw_dataset:
-            rst_tree = RSTTree.fromstring(data["rst_tree"])
+            rst_tree = RSTTree.fromstring("(S" + data["rst_tree"].replace("text ", "_ ") + ")")
             rst_tree = rstdt_re_categorize(rst_tree)
             assert RSTTree.check_relation(rst_tree, self.relation_vocab)
             bi_rst_tree = RSTTree.binarize(rst_tree)
             attach_tree = RSTTree.convert_to_attach(bi_rst_tree)
-            data["attach_tree"] = attach_tree
+            data["attach_tree"] = AttachTree.fromstring("(S" + data["attach_tree"].replace("text ", "_ ") + ")")
             # (wsj_1189 has annotateion error)
             if data["doc_id"] != "wsj_1189":  # check conversion
                 assert bi_rst_tree == AttachTree.convert_to_rst(attach_tree)
@@ -173,6 +173,59 @@ class RSTDT(Dataset):
 
         return dataset
 
+
+class AJRSTDT(RSTDT):
+    head_vocab = vocab({x:x for x in range(30)})
+    fully_label_vocab = vocab(  # from TRAINING (TRAIN+DEV)
+        Counter(
+            [
+                # N-S
+                "nucleus-satellite:Elaboration",
+                "nucleus-satellite:Attribution",
+                "nucleus-satellite:Explanation",
+                "nucleus-satellite:Enablement",
+                "nucleus-satellite:Background",
+                "nucleus-satellite:Evaluation",
+                "nucleus-satellite:Cause",
+                "nucleus-satellite:Contrast",
+                "nucleus-satellite:Condition",
+                "nucleus-satellite:Comparison",
+                "nucleus-satellite:Manner-Means",
+                "nucleus-satellite:Summary",
+                "nucleus-satellite:Temporal",
+                "nucleus-satellite:Topic-Comment",
+                "nucleus-satellite:Topic-Change",
+                # S-N
+                "satellite-nucleus:Attribution",
+                "satellite-nucleus:Contrast",
+                "satellite-nucleus:Background",
+                "satellite-nucleus:Condition",
+                "satellite-nucleus:Cause",
+                "satellite-nucleus:Evaluation",
+                "satellite-nucleus:Temporal",
+                "satellite-nucleus:Explanation",
+                "satellite-nucleus:Enablement",
+                "satellite-nucleus:Comparison",
+                "satellite-nucleus:Elaboration",
+                "satellite-nucleus:Manner-Means",
+                "satellite-nucleus:Summary",
+                "satellite-nucleus:Topic-Comment",
+                # N-N
+                "nucleus-nucleus:Joint",
+                "nucleus-nucleus:Same-unit",
+                "nucleus-nucleus:Contrast",
+                "nucleus-nucleus:Temporal",
+                "nucleus-nucleus:Topic-Change",
+                "nucleus-nucleus:Textual-organization",
+                "nucleus-nucleus:Comparison",
+                "nucleus-nucleus:Topic-Comment",
+                "nucleus-nucleus:Cause",
+                "nucleus-nucleus:Condition",
+                "nucleus-nucleus:Explanation",
+                "nucleus-nucleus:Evaluation",
+            ]
+        ),
+    )
 
 class InstrDT(Dataset):
     relation_vocab = vocab(

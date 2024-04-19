@@ -7,7 +7,7 @@ def re_categorize(tree: RSTTree):
             return node
 
         label = node.label()
-        if label not in ["ROOT", "text"]:
+        if label not in ["ROOT", "text", "_"]:
             nuc, rel = node.label().split(":", maxsplit=1)
             while rel[-2:] in ["-s", "-e", "-n"]:
                 rel = rel[:-2]
