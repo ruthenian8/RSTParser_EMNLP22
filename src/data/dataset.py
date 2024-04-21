@@ -158,16 +158,12 @@ class RSTDT(Dataset):
     def preprocess(self, raw_dataset: List[Dict]):
         dataset = []
         for data in raw_dataset:
-            rst_tree = RSTTree.fromstring("(S" + data["rst_tree"].replace("text ", "_ ") + ")")
+            rst_tree = RSTTree.fromstring("(S " + data["rst_tree"].replace("text ", "_ ") + ")")
             rst_tree = rstdt_re_categorize(rst_tree)
             assert RSTTree.check_relation(rst_tree, self.relation_vocab)
             bi_rst_tree = RSTTree.binarize(rst_tree)
-            attach_tree = RSTTree.convert_to_attach(bi_rst_tree)
-            data["attach_tree"] = AttachTree.fromstring("(S" + data["attach_tree"].replace("text ", "_ ") + ")")
+            data["attach_tree"] = AttachTree.fromstring("(S " + data["attach_tree"].replace("text ", "_ ") + ")")
             # (wsj_1189 has annotateion error)
-            if data["doc_id"] != "wsj_1189":  # check conversion
-                assert bi_rst_tree == AttachTree.convert_to_rst(attach_tree)
-
             doc = Doc.from_data(data)
             dataset.append(doc)
 
@@ -175,7 +171,8 @@ class RSTDT(Dataset):
 
 
 class AJRSTDT(RSTDT):
-    head_vocab = vocab({x:x for x in range(30)})
+    head_vocab = vocab({str(x):x for x in range(31)})
+    head_vocab.insert_token("0", 30)
     fully_label_vocab = vocab(  # from TRAINING (TRAIN+DEV)
         Counter(
             [

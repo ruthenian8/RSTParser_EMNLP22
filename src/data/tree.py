@@ -9,7 +9,7 @@ class RSTTree(Tree):
         super(RSTTree, self).__init__(label, children)
         self.nuc = None
         self.rel = None
-        if label not in ["ROOT", "text"]:
+        if label not in ["ROOT", "S", "text", "_"]:
             nuc, rel = label.split(":", maxsplit=1)
 
     @classmethod
@@ -93,7 +93,7 @@ class RSTTree(Tree):
                 continue
 
             label = tree.label()
-            if label in ["ROOT", "text"]:
+            if label in ["ROOT", "text", "S", "_"]:
                 continue
 
             nuc, rel = label.split(":", maxsplit=1)
@@ -138,7 +138,7 @@ class AttachTree(Tree):
         super(AttachTree, self).__init__(label, children)
         self.nuc = None
         self.rel = None
-        if label == "text":
+        if label == "text" or label == "_" or label == "S":
             # EDU node
             pass
         else:
@@ -180,7 +180,7 @@ class AttachTree(Tree):
                 continue  # EDU idx
 
             label = node.label()
-            if label == "text" and len(node) == 1:
+            if label == "text" or label == "_" and len(node) == 1:
                 continue  # leave node
 
             edu_indices = [int(idx) for idx in node.leaves()]

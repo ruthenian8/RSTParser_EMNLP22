@@ -33,8 +33,8 @@ class AJParser(ParserBase):
         batch_size: Optional[int] = None,
     ):
         head_vocab = dataset.head_vocab
-        parent_vocab = dataset.parent_vocab
-        child_vocab = dataset.child_vocab
+        parent_vocab = dataset.fully_label_vocab
+        child_vocab = dataset.fully_label_vocab
 
         samples = []
         doc: Doc
@@ -47,7 +47,7 @@ class AJParser(ParserBase):
             xs, ys, fs = [], [], []
             for idx, head, parent, child in zip(range(len(head_list)), head_list, parent_list, child_list):
                 s1, s2, q1 = (0, idx), (idx+1, idx+1), (0, idx+1)
-                head_idx = head_vocab[head]
+                head_idx = head_vocab[str(head)]
                 parent_idx = parent_vocab[parent]
                 child_idx = child_vocab[child]
                 org_feat = self.get_organization_features(s1, s2, q1, doc)

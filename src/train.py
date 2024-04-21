@@ -53,6 +53,7 @@ def main():
         "--model-type",
         required=True,
         choices=[
+            "aj",
             "top_down_v1",
             "top_down_v2",
             "shift_reduce_v1",

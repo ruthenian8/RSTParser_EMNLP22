@@ -2,8 +2,8 @@
 set -x
 
 # OPTIONS
-DATA_DIR=./data/pcc
-SAVE_DIR=./models/pcc
+DATA_DIR=./data/rstdt
+SAVE_DIR=./models/rstdt
 PARSER_TYPE=aj
 BERT_TYPE=deberta-base
 LR=1e-5
