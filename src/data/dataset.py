@@ -158,7 +158,7 @@ class RSTDT(Dataset):
     def preprocess(self, raw_dataset: List[Dict]):
         dataset = []
         for data in raw_dataset:
-            rst_tree = RSTTree.fromstring("(S " + data["rst_tree"].replace("text ", "_ ") + ")")
+            rst_tree = RSTTree.fromstring(data["rst_tree"].replace("text ", "_ "))
             rst_tree = rstdt_re_categorize(rst_tree)
             assert RSTTree.check_relation(rst_tree, self.relation_vocab)
             bi_rst_tree = RSTTree.binarize(rst_tree)

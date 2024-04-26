@@ -98,7 +98,9 @@ class AJParser(ParserBase):
         num_leaves = len(doc.edus)
         for idx in range(num_leaves):
             s1, s2, q1 = (0, idx), (idx+1, idx+1), (0, idx+1)
-
+            if idx + 1 == num_leaves:
+                s2 = (idx, idx)
+                q1 = (0, idx)
             span = {"s1": s1, "s2": s2, "q1": q1}
             feat = {"org": self.get_organization_features(s1, s2, q1, doc, self.classifier.device)}
 
@@ -107,7 +109,8 @@ class AJParser(ParserBase):
             action_sequence.append((head, parent, child))
 
         new_tree = AttachJuxtaposeTree.totree(list(map(str, range(num_leaves))), "S")
-        new_tree = AttachJuxtaposeTree.action2tree(new_tree, action_sequence)
+        new_tree = AttachJuxtaposeTree.action2tree(new_tree, list(map(lambda x: (int(x[0]), *x[1:]), action_sequence)))
+        new_tree = AttachTree.fromstring(new_tree.pformat(margin=100000))
         return new_tree
 
     def parse_with_naked_tree(self, doc: Doc, tree: RSTTree | AttachTree):
