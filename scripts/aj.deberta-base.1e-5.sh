@@ -23,6 +23,7 @@ for SEED in 0 1 2; do
                 --bert-model-name $BERT_TYPE \
                 --batch-unit-type span_fast \
                 --batch-size 5 \
+                --disable-lr-schedule \
                 --accumulate-grad-batches 1 \
                 --num-workers 0 \
                 --lr $LR \

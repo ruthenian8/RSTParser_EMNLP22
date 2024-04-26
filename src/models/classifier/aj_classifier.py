@@ -98,9 +98,9 @@ class AJClassifier(ClassifierBase):
 
     def compute_loss(self, output, batch: Batch):
         labels = batch.label
-        head_idx = labels["act"]
-        parent_idx = labels["nuc"]
-        child_idx = labels["rel"]
+        head_idx = labels["head"]
+        parent_idx = labels["parent"]
+        child_idx = labels["child"]
         head_loss = self.xent_loss(output["head_scores"], head_idx)
         parent_loss = self.xent_loss(output["parent_scores"], parent_idx)
         child_loss = self.xent_loss(output["child_scores"], child_idx)

@@ -45,6 +45,9 @@ class AJParser(ParserBase):
             xs, ys, fs = [], [], []
             for idx, head, parent, child in zip(range(len(head_list)), head_list, parent_list, child_list):
                 s1, s2, q1 = (0, idx), (idx+1, idx+1), (0, idx+1)
+                if idx + 1 == len(head_list):
+                    s2 = (idx, idx)
+                    q1 = (0, idx)
                 head_idx = head_vocab[str(head)]
                 parent_idx = parent_vocab[parent]
                 child_idx = child_vocab[child]

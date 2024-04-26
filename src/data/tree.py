@@ -72,7 +72,7 @@ class RSTTree(Tree):
             label = ":".join([nuc, rel])
             return AttachTree(label, [helper(child) for child in node])
 
-        # assert RSTTree.is_binary(tree)
+        assert RSTTree.is_binary(tree)
         assert isinstance(tree, RSTTree)
         return helper(tree)
 

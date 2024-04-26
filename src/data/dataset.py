@@ -161,8 +161,8 @@ class RSTDT(Dataset):
             rst_tree = RSTTree.fromstring("(S " + data["rst_tree"].replace("text ", "_ ") + ")")
             rst_tree = rstdt_re_categorize(rst_tree)
             assert RSTTree.check_relation(rst_tree, self.relation_vocab)
-            # bi_rst_tree = RSTTree.binasrize(rst_tree)
-            data["attach_tree"] = AttachTree.fromstring("(S " + data["attach_tree"] + ")")
+            bi_rst_tree = RSTTree.binarize(rst_tree)
+            data["attach_tree"] = AttachTree.fromstring("(S " + RSTTree.convert_to_attach(bi_rst_tree).pformat(margin=100000) + ")")
             # (wsj_1189 has annotateion error)
             doc = Doc.from_data(data)
             dataset.append(doc)
@@ -222,6 +222,7 @@ class AJRSTDT(RSTDT):
                 "nucleus-nucleus:Evaluation",
             ]
         ),
+        specials=["<nul>"]
     )
 
 class InstrDT(Dataset):
