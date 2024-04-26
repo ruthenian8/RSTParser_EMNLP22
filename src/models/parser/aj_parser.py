@@ -40,8 +40,6 @@ class AJParser(ParserBase):
         doc: Doc
         for doc in dataset:
             tree = doc.tree
-            if isinstance(tree, RSTTree):
-                tree = RSTTree.convert_to_attach(tree)
 
             head_list, parent_list, child_list = self.generate_action_sequence(tree)
             xs, ys, fs = [], [], []

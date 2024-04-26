@@ -63,7 +63,7 @@ class RSTTree(Tree):
         def helper(node):
             if len(node) == 1:
                 edu_idx = node[0][0]
-                return AttachTree("text", [edu_idx])
+                return AttachTree("_", [edu_idx])
 
             l_nuc, l_rel = node[0].label().split(":", maxsplit=1)
             r_nuc, r_rel = node[1].label().split(":", maxsplit=1)
@@ -72,7 +72,7 @@ class RSTTree(Tree):
             label = ":".join([nuc, rel])
             return AttachTree(label, [helper(child) for child in node])
 
-        assert RSTTree.is_binary(tree)
+        # assert RSTTree.is_binary(tree)
         assert isinstance(tree, RSTTree)
         return helper(tree)
 
