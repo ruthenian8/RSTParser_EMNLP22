@@ -23,10 +23,7 @@ class AJParser(ParserBase):
         for action in actions:
             head_list.append(action[0])
             parent_list.append(action[1])
-            if action[2] == "<nul>":
-                child_list.append("nucleus-satellite:Elaboration")
-            else:
-                child_list.append(action[2])
+            child_list.append(action[2])
         return head_list, parent_list, child_list
 
     def generate_training_samples(
@@ -118,13 +115,10 @@ class AJParser(ParserBase):
             # predict action and labels
             head, parent, child = self.select_action_and_labels(bert_output, span, feat, action_sequence)
             action_sequence.append((head, parent, child))
-
-        action_sequence = list(map(lambda x: (int(x[0]), *x[1:]), action_sequence))
-        action_sequence[0] = (action_sequence[:2], "<nul>")
         print(len(action_sequence))
 
         new_tree = AttachJuxtaposeTree.totree(list(map(str, range(num_leaves))), "S")
-        new_tree = AttachJuxtaposeTree.action2tree(new_tree, )
+        new_tree = AttachJuxtaposeTree.action2tree(new_tree, list(map(lambda x: (int(x[0]), *x[1:]), action_sequence)))
         pformatted = new_tree.pformat(margin=100000)
 
         print(pformatted)
