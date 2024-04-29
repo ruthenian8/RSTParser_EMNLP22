@@ -222,7 +222,6 @@ class AJRSTDT(RSTDT):
                 "nucleus-nucleus:Evaluation",
             ]
         ),
-        specials=["<nul>"]
     )
 
 class InstrDT(Dataset):
