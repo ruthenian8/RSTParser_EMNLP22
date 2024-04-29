@@ -85,6 +85,14 @@ class AJParser(ParserBase):
         head_scores, parent_scores, child_scores = self.classifier.predict(bert_output, span, feat)
 
         # select allowed action
+        _, head_indices = torch.sort(head_scores, dim=0, descending=True)
+        for head_idx in head_indices:
+            head = head_vocab.lookup_token(head_idx)
+            int_head = int(head)
+
+            if int_head < len(state):
+                break
+
         head = head_vocab.lookup_token(torch.argmax(head_scores))
         parent = parent_vocab.lookup_token(torch.argmax(parent_scores))
         child = child_vocab.lookup_token(torch.argmax(child_scores))
@@ -105,12 +113,33 @@ class AJParser(ParserBase):
             feat = {"org": self.get_organization_features(s1, s2, q1, doc, self.classifier.device)}
 
             # predict action and labels
-            head, parent, child = self.select_action_and_labels(bert_output, span, feat, None)
+            head, parent, child = self.select_action_and_labels(bert_output, span, feat, action_sequence)
             action_sequence.append((head, parent, child))
+        print(len(action_sequence))
 
         new_tree = AttachJuxtaposeTree.totree(list(map(str, range(num_leaves))), "S")
         new_tree = AttachJuxtaposeTree.action2tree(new_tree, list(map(lambda x: (int(x[0]), *x[1:]), action_sequence)))
-        new_tree = AttachTree.fromstring(new_tree.pformat(margin=100000))
+        pformatted = new_tree.pformat(margin=100000)
+
+        print(pformatted)
+        print(doc.tree.pformat(margin=100000))
+
+        new_tree = AttachTree.fromstring(pformatted)
+        assert len(new_tree.leaves()) == len(doc.tree.leaves())
+
+        new_tree = new_tree[(0,)]
+        doc.tree = doc.tree[(0,)]
+
+        for position in doc.tree.treepositions():
+            tree_position = doc.tree[position]
+            if isinstance(tree_position, AttachTree) and tree_position.label() == "_":
+                tree_position.set_label("text")
+        
+        for position in new_tree.treepositions():
+            tree_position = new_tree[position]
+            if isinstance(tree_position, AttachTree) and tree_position.label() == "_":
+                tree_position.set_label("text")
+
         return new_tree
 
     def parse_with_naked_tree(self, doc: Doc, tree: RSTTree | AttachTree):
