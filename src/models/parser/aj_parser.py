@@ -18,7 +18,8 @@ class AJParser(ParserBase):
         super(AJParser, self).__init__(classifier)
 
     def generate_action_sequence(self, tree: AttachTree):
-        actions = AttachJuxtaposeTree.tree2action(tree)
+        copied_tree = tree.copy(deep=True)
+        actions = AttachJuxtaposeTree.tree2action(copied_tree)
         head_list, parent_list, child_list = [], [], []
         for action in actions:
             head_list.append(action[0])
@@ -93,7 +94,6 @@ class AJParser(ParserBase):
             if int_head < len(state):
                 break
 
-        head = head_vocab.lookup_token(torch.argmax(head_scores))
         parent = parent_vocab.lookup_token(torch.argmax(parent_scores))
         child = child_vocab.lookup_token(torch.argmax(child_scores))
 

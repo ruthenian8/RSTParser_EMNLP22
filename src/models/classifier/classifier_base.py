@@ -151,14 +151,14 @@ class ClassifierBase(pl.LightningModule):
             pred_tree = self.parser.parse(doc)
             gold_tree = doc.tree
 
-            self.met_rst_parseval([pred_tree], [gold_tree])
+            # self.met_rst_parseval([pred_tree], [gold_tree])
             self.met_ori_parseval([pred_tree], [gold_tree])
 
-            pred_tree = self.parser.parse_with_naked_tree(doc, doc.tree)
-            gold_tree = doc.tree
+            # pred_tree = self.parser.parse_with_naked_tree(doc, doc.tree)
+            # gold_tree = doc.tree
 
-            self.met_rst_parseval_oracle([pred_tree], [gold_tree])
-            self.met_ori_parseval_oracle([pred_tree], [gold_tree])
+            # self.met_rst_parseval_oracle([pred_tree], [gold_tree])
+            # self.met_ori_parseval_oracle([pred_tree], [gold_tree])
 
             return
         else:
@@ -172,18 +172,18 @@ class ClassifierBase(pl.LightningModule):
         pred_tree = self.parser.parse(doc)
         gold_tree = doc.tree
 
-        self.met_rst_parseval([pred_tree], [gold_tree])
+        # self.met_rst_parseval([pred_tree], [gold_tree])
         self.met_ori_parseval([pred_tree], [gold_tree])
 
         return
 
     def validation_epoch_end(self, outputs: List):
-        scores = self.met_rst_parseval.compute()
-        for name, value in scores.items():
-            self.log("valid/{}".format(name), value, prog_bar=True)
-            self.log("hp_metric/{}".format(name), value, prog_bar=True)
+        # scores = self.met_rst_parseval.compute()
+        # for name, value in scores.items():
+        #     self.log("valid/{}".format(name), value, prog_bar=True)
+        #     self.log("hp_metric/{}".format(name), value, prog_bar=True)
 
-        self.met_rst_parseval.reset()
+        # self.met_rst_parseval.reset()
 
         scores = self.met_ori_parseval.compute()
         for name, value in scores.items():
@@ -192,11 +192,11 @@ class ClassifierBase(pl.LightningModule):
 
         self.met_ori_parseval.reset()
 
-        scores = self.met_rst_parseval_oracle.compute()
-        for name, value in scores.items():
-            self.log("valid/{}_oracle".format(name), value, prog_bar=False)
+        # scores = self.met_rst_parseval_oracle.compute()
+        # for name, value in scores.items():
+        #     self.log("valid/{}_oracle".format(name), value, prog_bar=False)
 
-        self.met_rst_parseval_oracle.reset()
+        # self.met_rst_parseval_oracle.reset()
 
         scores = self.met_ori_parseval_oracle.compute()
         for name, value in scores.items():
@@ -207,11 +207,11 @@ class ClassifierBase(pl.LightningModule):
         return
 
     def test_epoch_end(self, outputs):
-        scores = self.met_rst_parseval.compute()
-        for name, value in scores.items():
-            self.log("test/{}".format(name), value, prog_bar=True)
+        # scores = self.met_rst_parseval.compute()
+        # for name, value in scores.items():
+        #     self.log("test/{}".format(name), value, prog_bar=True)
 
-        self.met_rst_parseval.reset()
+        # self.met_rst_parseval.reset()
 
         scores = self.met_ori_parseval.compute()
         for name, value in scores.items():
