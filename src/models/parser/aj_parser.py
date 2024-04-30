@@ -84,17 +84,23 @@ class AJParser(ParserBase):
         child_vocab = self.classifier.child_vocab
 
         head_scores, parent_scores, child_scores = self.classifier.predict(bert_output, span, feat)
-
+        len_state = len(state)
         # select allowed action
         _, head_indices = torch.sort(head_scores, dim=0, descending=True)
         for head_idx in head_indices:
             head = head_vocab.lookup_token(head_idx)
             int_head = int(head)
 
-            if int_head < len(state):
+            if int_head < len_state:
                 break
-
-        parent = parent_vocab.lookup_token(torch.argmax(parent_scores))
+        _, parent_indices = torch.sort(parent_scores, dim=0, descending=True)
+        if len_state > 0 and state[-1][1] == "<nul>":
+            for parent_idx in parent_indices:
+                parent = parent_vocab.lookup_token(parent_idx)
+                if parent != "<nul>":
+                    break
+        else:
+            parent = parent_vocab.lookup_token(torch.argmax(parent_scores))
         child = child_vocab.lookup_token(torch.argmax(child_scores))
 
         return head, parent, child
