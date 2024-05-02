@@ -18,6 +18,9 @@ class DMRGTree(AttachTree):
                 nuc = "nucleus-satellite"
             elif nuc == "NN":
                 nuc = "nucleus-nucleus"
+            else:
+                super().__init__(label, children)
+                return
             label = f"{nuc}:{rel}"
         super().__init__(label, children)
 
