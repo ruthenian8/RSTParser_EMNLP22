@@ -87,24 +87,31 @@ class AJParser(ParserBase):
         len_state = len(state)
         # select allowed action
         _, head_indices = torch.sort(head_scores, dim=0, descending=True)
-        for head_idx in head_indices:
-            head = head_vocab.lookup_token(head_idx)
-            int_head = int(head)
-
-            if int_head < len_state:
-                break
         _, parent_indices = torch.sort(parent_scores, dim=0, descending=True)
-        if len_state > 0 and state[-1][1] == "<nul>":
-            for parent_idx in parent_indices:
-                parent = parent_vocab.lookup_token(parent_idx)
-                if parent != "<nul>":
-                    break
-        else:
-            parent = parent_vocab.lookup_token(torch.argmax(parent_scores))
         child = child_vocab.lookup_token(torch.argmax(child_scores))
 
-        return head, parent, child
+        head_idx, parent_idx = 0, 0
+        while True:
+            head = head_vocab.lookup_token(head_indices[head_idx])
+            parent = parent_vocab.lookup_token(parent_indices[parent_idx])
+            int_head = int(head)
+            new_state = [*state, (int_head, parent, child)]
+            new_tree = AttachJuxtaposeTree.totree([str(i) for i in range(len(new_state))], "S")
+            try:
 
+                new_tree = AttachJuxtaposeTree.action2tree(new_tree, [(int(x[0]), *x[1:]) for x in new_state])
+                break
+            except Exception as e:
+                if not isinstance(e, AttributeError) and not isinstance(e, IndexError):
+                    raise e
+                if int_head >= len_state or isinstance(e, AttributeError):
+                    head_idx += 1
+                    continue
+                else:
+                    parent_idx += 1
+                    continue
+
+        return head, parent, child
 
     def parse(self, doc: Doc):
         bert_output = self.classifier.encoder(doc)
