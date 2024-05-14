@@ -1,4 +1,3 @@
-import pandas as pd
 import torch
 import csv
 
@@ -16,9 +15,13 @@ def csv_to_cm(file, vocab):
     # Populate the confusion matrix tensor
     for row in csv_data[1:]:
         row_label = row[0]
+        if row_label not in vocab:
+            continue
         row_index = vocab[row_label]
         for col_index, value in enumerate(row[1:]):
             col_label = column_labels[col_index]
+            if col_label not in vocab:
+                continue
             col_index = vocab[col_label]
             confusion_matrix[row_index, col_index] = int(value)
     

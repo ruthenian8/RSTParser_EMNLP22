@@ -184,9 +184,8 @@ class AttachTree(Tree):
             if label == "text":
                 continue  # leave node
 
-            # edu_indices = [int(idx) for idx in node.leaves()]
-            # span = (edu_indices[0], edu_indices[-1] + 1)
-            span = " ".join(node.leaves())
+            edu_indices = [int(idx) for idx in node.leaves()]
+            span = (edu_indices[0], edu_indices[-1] + 1)
             ns, relation = label.split(":", maxsplit=1)
             if "full" in eval_types:
                 brackets["full"].append((span, ns, relation))

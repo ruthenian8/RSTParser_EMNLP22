@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-import csv
+import os
 
 from data.batch import Batch
 from data.doc import Doc
@@ -30,8 +30,9 @@ class ShiftReduceClassifierV2(ShiftReduceClassifierBase):
 
         assert self.act_vocab["<pad>"] == self.ful_vocab["<pad>"]
         pad_idx = self.act_vocab["<pad>"]
-        self.pad_idx == pad_idx
+        self.pad_idx = pad_idx
         self.xent_loss = nn.CrossEntropyLoss(ignore_index=pad_idx)
+        self.xent_loss_full = nn.CrossEntropyLoss()
 
         self.use_soft_labels = use_soft_labels
         self.confusion_matrix = csv_to_cm(confusion_matrix_file, self.ful_vocab)
@@ -42,7 +43,9 @@ class ShiftReduceClassifierV2(ShiftReduceClassifierBase):
         params.update(
             {
                 "use_soft_labels": config.use_soft_labels,
-                "confusion_matrix_file": config.confusion_matrix_file,
+                "confusion_matrix_file": os.path.join(
+                    config.data_dir, config.confusion_matrix_file
+                ),
             }
         )
         return params
@@ -84,10 +87,15 @@ class ShiftReduceClassifierV2(ShiftReduceClassifierBase):
         act_loss = self.xent_loss(output["act_scores"], act_idx)
 
         if self.use_soft_labels:
-            calibrated_prob_scores = get_soft_labels(self.confusion_matrix, ful_idx, sec_idx, self.DATASET.confidence, num_classes=len(self.ful_vocab))
-            assert calibrated_prob_scores.shape == output["ful_scores"].shape
-            ful_loss = self.xent_loss(output["ful_scores"], calibrated_prob_scores)
-        else:            
+            calibrated_prob_scores = get_soft_labels(
+                self.confusion_matrix,
+                ful_idx,
+                sec_idx,
+                self.DATASET.confidence,
+                num_classes=len(self.ful_vocab),
+            )
+            ful_loss = self.xent_loss_full(output["ful_scores"], calibrated_prob_scores)
+        else:
             ful_loss = self.xent_loss(output["ful_scores"], ful_idx)
 
         if torch.all(ful_idx == self.pad_idx):

@@ -47,7 +47,7 @@ def main():
     parser.add_argument(
         "--confusion-matrix-file",
         type=Path,
-        default="confusion_matrix.csv",
+        default=Path("confusion_matrix.csv"),
         help="file name of confusion matrix",
     )
     parser.add_argument(
@@ -56,7 +56,7 @@ def main():
 
     # model parameters
     parser.add_argument(
-        "--use-soft-label",
+        "--use-soft-labels",
         required=True,
         action="store_true",
     )
@@ -115,7 +115,7 @@ def main():
             "deberta-base",
             "ikim-uk-essen/geberta-base",
             "deberta-large",
-            "ikim-uk-essen/geberta-large",
+            "microsoft/mdeberta-v3-base",
         ],
         help="encoder type",
     )
