@@ -78,6 +78,7 @@ class Dataset(torch.utils.data.Dataset):
 
 
 class RSTDT(Dataset):
+    confidence = 0.630447
     relation_vocab = vocab(
         Counter(
             [
@@ -163,7 +164,17 @@ class RSTDT(Dataset):
             assert RSTTree.check_relation(rst_tree, self.relation_vocab)
             bi_rst_tree = RSTTree.binarize(rst_tree)
             attach_tree = RSTTree.convert_to_attach(bi_rst_tree)
+
+            attach_tree_2 = None
+            if "rst_tree_2" in data:
+                rst_tree_2 = RSTTree.fromstring(data["rst_tree_2"])
+                rst_tree_2 = rstdt_re_categorize(rst_tree_2)
+                assert RSTTree.check_relation(rst_tree_2, self.relation_vocab)
+                bi_rst_tree_2 = RSTTree.binarize(rst_tree_2)
+                attach_tree_2 = RSTTree.convert_to_attach(bi_rst_tree_2)
+
             data["attach_tree"] = attach_tree
+            data["attach_tree_2"] = attach_tree_2
             # (wsj_1189 has annotateion error)
             if data["doc_id"] != "wsj_1189":  # check conversion
                 assert bi_rst_tree == AttachTree.convert_to_rst(attach_tree)
@@ -175,6 +186,8 @@ class RSTDT(Dataset):
 
 
 class PCCDataset(RSTDT):
+    confidence = 0.77146
+
     def preprocess(self, raw_dataset: List[Dict]):
         dataset = []
         for data in raw_dataset:
@@ -182,6 +195,11 @@ class PCCDataset(RSTDT):
             bi_rst_tree = rst_tree
             attach_tree = AttachTree.fromstring(data["attach_tree"])
             data["attach_tree"] = attach_tree
+            attach_tree_2 = None
+            if "attach_tree_2" in data:
+                attach_tree_2 = AttachTree.fromstring(data["attach_tree_2"])
+
+            data["attach_tree_2"] = attach_tree_2
             # (wsj_1189 has annotateion error)
             if data["doc_id"] != "wsj_1189":  # check conversion
                 assert bi_rst_tree == AttachTree.convert_to_rst(attach_tree)
@@ -189,6 +207,10 @@ class PCCDataset(RSTDT):
             doc = Doc.from_data(data)
             dataset.append(doc)
         return dataset
+
+
+class NLDT(PCCDataset):
+    confidence = 0.54794
 
 
 class InstrDT(Dataset):

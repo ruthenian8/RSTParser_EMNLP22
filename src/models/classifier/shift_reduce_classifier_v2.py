@@ -1,14 +1,16 @@
 import torch
 import torch.nn as nn
+import csv
 
 from data.batch import Batch
 from data.doc import Doc
 from models.classifier import ShiftReduceClassifierBase
 from models.classifier.linear import FeedForward
+from models.classifier.calibrate import get_soft_labels, csv_to_cm
 
 
 class ShiftReduceClassifierV2(ShiftReduceClassifierBase):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, use_soft_labels: bool, confusion_matrix_file: str, *args, **kwargs):
         super(ShiftReduceClassifierV2, self).__init__(*args, **kwargs)
         self.save_hyperparameters()
 
@@ -30,6 +32,20 @@ class ShiftReduceClassifierV2(ShiftReduceClassifierBase):
         pad_idx = self.act_vocab["<pad>"]
         self.pad_idx == pad_idx
         self.xent_loss = nn.CrossEntropyLoss(ignore_index=pad_idx)
+
+        self.use_soft_labels = use_soft_labels
+        self.confusion_matrix = csv_to_cm(confusion_matrix_file, self.ful_vocab)
+
+    @classmethod
+    def params_from_config(cls, config):
+        params = super().params_from_config(config)
+        params.update(
+            {
+                "use_soft_labels": config.use_soft_labels,
+                "confusion_matrix_file": config.confusion_matrix_file,
+            }
+        )
+        return params
 
     def forward(self, doc: Doc, spans: dict, feats: dict):
         document_embedding = self.encoder(doc)
@@ -63,8 +79,17 @@ class ShiftReduceClassifierV2(ShiftReduceClassifierBase):
         labels = batch.label
         act_idx = labels["act"]
         ful_idx = labels["ful"]
+        sec_idx = labels["sec"]
+        calibrated_prob_scores = None
         act_loss = self.xent_loss(output["act_scores"], act_idx)
-        ful_loss = self.xent_loss(output["ful_scores"], ful_idx)
+
+        if self.use_soft_labels:
+            calibrated_prob_scores = get_soft_labels(self.confusion_matrix, ful_idx, sec_idx, self.DATASET.confidence, num_classes=len(self.ful_vocab))
+            assert calibrated_prob_scores.shape == output["ful_scores"].shape
+            ful_loss = self.xent_loss(output["ful_scores"], calibrated_prob_scores)
+        else:            
+            ful_loss = self.xent_loss(output["ful_scores"], ful_idx)
+
         if torch.all(ful_idx == self.pad_idx):
             # if action is shift, there are no nuc and relation labels
             # and xent_loss return NaN.

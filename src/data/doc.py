@@ -9,9 +9,10 @@ nlp = English()
 
 
 class Doc(object):
-    def __init__(self, edus: List[EDU], tree: Union[RSTTree, AttachTree], doc_id: str):
+    def __init__(self, edus: List[EDU], tree: Union[RSTTree, AttachTree], doc_id: str, tree_2: Union[RSTTree, AttachTree, None] = None):
         self.edus = edus
         self.tree = tree
+        self.tree_2 = tree_2
         self.doc_id = doc_id
         self.inputs = None  # numericalized edus
 
@@ -30,6 +31,7 @@ class Doc(object):
 
         assert "attach_tree" in data
         tree = data["attach_tree"]
+        tree_2 = data.get("attach_tree_2", None)
 
         assert "edu_strings" in data
         edu_strings = data["edu_strings"]  # non-tokenized
@@ -79,4 +81,4 @@ class Doc(object):
             )
             edus.append(edu)
 
-        return cls(edus, tree, doc_id)
+        return cls(edus, tree, doc_id, tree_2)

@@ -23,7 +23,7 @@ def main():
     parser.add_argument(
         "--corpus",
         default="RSTDT",
-        choices=["RSTDT", "InstrDT", "PCC"],
+        choices=["RSTDT", "InstrDT", "PCC", "NLDT"],
         help="corpus type (label set is in src/data/dataset.py)",
     )
     parser.add_argument(
@@ -45,10 +45,21 @@ def main():
         help="file name of valiation file",
     )
     parser.add_argument(
+        "--confusion-matrix-file",
+        type=Path,
+        default="confusion_matrix.csv",
+        help="file name of confusion matrix",
+    )
+    parser.add_argument(
         "--test-file", type=Path, default="test.json", help="file name of test dataset"
     )
 
     # model parameters
+    parser.add_argument(
+        "--use-soft-label",
+        required=True,
+        action="store_true",
+    )
     parser.add_argument(
         "--model-type",
         required=True,

@@ -57,7 +57,7 @@ def get_config():
     parser.add_argument(
         "--corpus",
         default="RSTDT",
-        choices=["RSTDT", "InstrDT", "PCC"],
+        choices=["RSTDT", "InstrDT", "PCC", "NLDT"],
         help="corpus type (label set is in src/data/dataset.py)",
     )
     parser.add_argument(

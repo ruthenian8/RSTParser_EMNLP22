@@ -1,7 +1,7 @@
 import sys
 import os
 import json
-from data.tree import AttachTree
+from .tree import AttachTree
 
 PFORMAT_MARGIN = 1000000000
 

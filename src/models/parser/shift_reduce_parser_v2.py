@@ -6,6 +6,7 @@ import torch
 from data.dataset import Dataset
 from data.doc import Doc
 from data.tree import RSTTree
+from models.classifier.calibrate import get_soft_labels
 from models.classifier import ShiftReduceClassifierBase
 from models.parser import ShiftReduceParserBase
 from models.parser.shift_reduce_state import ShiftReduceState
@@ -31,20 +32,22 @@ class ShiftReduceParserV2(ShiftReduceParserBase):
         samples = []
         for doc in dataset:
             tree = doc.tree
+            tree_2 = doc.tree_2
             if isinstance(tree, RSTTree):
                 tree = RSTTree.convert_to_attach(tree)
 
-            act_list, nuc_list, rel_list = self.generate_action_sequence(tree)
+            act_list, nuc_list, rel_list, secondary_labels = self.generate_action_sequence(tree, tree_2)
             xs, ys, fs = [], [], []
             state = ShiftReduceState(len(tree.leaves()))
-            for act, nuc, rel in zip(act_list, nuc_list, rel_list):
+            for act, nuc, rel, sec in zip(act_list, nuc_list, rel_list, secondary_labels):
                 s1, s2, q1 = state.get_state()
                 label = "<pad>" if nuc == rel == "<pad>" else ":".join([nuc, rel])
                 act_idx = act_vocab[act]
                 ful_idx = ful_vocab[label]
+                sec_idx = ful_vocab[sec] if sec is not None else self.classifier.pad_idx
                 org_feat = self.get_organization_features(s1, s2, q1, doc)
                 xs.append({"s1": s1, "s2": s2, "q1": q1})
-                ys.append({"act": act_idx, "ful": ful_idx})
+                ys.append({"act": act_idx, "ful": ful_idx, "sec": sec_idx})
                 fs.append({"org": org_feat})
                 state.operate(act, nuc, rel)
 

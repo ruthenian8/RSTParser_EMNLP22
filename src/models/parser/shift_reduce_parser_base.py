@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Optional
 
 import torch
 
@@ -52,7 +52,7 @@ class ShiftReduceParserBase(ParserBase):
         bert_output = self.classifier.encoder(doc)
         n_edus = len(doc.edus)
 
-        act_list, _, _ = self.generate_action_sequence(tree)
+        act_list, _, _, _ = self.generate_action_sequence(tree)
 
         state = ShiftReduceState(n_edus)
         for gold_act in act_list:
@@ -71,8 +71,14 @@ class ShiftReduceParserBase(ParserBase):
         tree = state.get_tree()
         return tree
 
-    def generate_action_sequence(self, tree: AttachTree):
-        act_list, nuc_list, rel_list = [], [], []
+    def generate_action_sequence(self, tree: AttachTree, tree_2: Optional[AttachTree] = None):
+        act_list, nuc_list, rel_list, secondary_labels = [], [], [], []
+        brackets = None
+        bracket_dict = None
+        if tree_2 is not None:
+            brackets = tree_2.get_brackets(["full"])["full"]
+            bracket_dict = {span: (nuc, rel) for span, nuc, rel in brackets}
+
         for tp in tree.treepositions("postorder"):
             node = tree[tp]
             if not isinstance(node, AttachTree):
@@ -94,7 +100,18 @@ class ShiftReduceParserBase(ParserBase):
             else:
                 raise ValueError("Input tree is not binarized.")
 
-        return act_list, nuc_list, rel_list
+            edu_indices = [int(idx) for idx in node.leaves()]
+            span = (edu_indices[0], edu_indices[-1] + 1)
+            if tree_2 is None:
+                secondary_labels.append(None)
+            else:
+                if span in bracket_dict:
+                    nuc, rel = bracket_dict[span]
+                    secondary_labels.append(f"{nuc}:{rel}")
+                else:
+                    secondary_labels.append("<pad>")
+
+        return act_list, nuc_list, rel_list, secondary_labels
 
     def get_organization_features(
         self, s1: Tuple[int], s2: Tuple[int], q1: Tuple[int], doc: Doc, device=None
