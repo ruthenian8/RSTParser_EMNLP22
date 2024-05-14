@@ -4,13 +4,13 @@ set -x
 # OPTIONS
 DATA_DIR=./data/PCC
 SAVE_DIR=./models/PCC
-PARSER_TYPE=shift_reduce_v1
+PARSER_TYPE=shift_reduce_v2
 BERT_TYPE=microsoft/mdeberta-v3-base
 LR=1e-5
 NUM_GPUS=1
 export CUDA_VISIBLE_DEVICES=0
 for SEED in 0 1 2; do
-    MODEL_NAME=$PARSER_TYPE.$BERT_TYPE.$LR
+    MODEL_NAME="PCC_SOFT"
     VERSION=$SEED
 
     if [ -d $SAVE_DIR/$MODEL_NAME/version_$SEED/checkpoints ]; then

@@ -85,7 +85,7 @@ def generate_soft_labels(num_classes, primary_class_indices, calibrated_confiden
         torch.Tensor: Soft label vectors for the given annotator.
     """
     batch_size = primary_class_indices.size(0)
-    soft_labels = torch.full((batch_size, num_classes), 0.0)
+    soft_labels = torch.full((batch_size, num_classes), 0.0).to("cuda:0")
     fill_value = (1 - calibrated_confidences) / (num_classes - 1)
     soft_labels += fill_value.unsqueeze(1)
 

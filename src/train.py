@@ -57,7 +57,6 @@ def main():
     # model parameters
     parser.add_argument(
         "--use-soft-labels",
-        required=True,
         action="store_true",
     )
     parser.add_argument(

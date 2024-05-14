@@ -35,7 +35,7 @@ class ShiftReduceClassifierV2(ShiftReduceClassifierBase):
         self.xent_loss_full = nn.CrossEntropyLoss()
 
         self.use_soft_labels = use_soft_labels
-        self.confusion_matrix = csv_to_cm(confusion_matrix_file, self.ful_vocab)
+        self.confusion_matrix = csv_to_cm(confusion_matrix_file, self.ful_vocab).to("cuda:0")
 
     @classmethod
     def params_from_config(cls, config):

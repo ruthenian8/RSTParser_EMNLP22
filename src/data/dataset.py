@@ -186,7 +186,7 @@ class RSTDT(Dataset):
 
 
 class PCCDataset(RSTDT):
-    confidence = 0.77146
+    confidence = 1
 
     def preprocess(self, raw_dataset: List[Dict]):
         dataset = []

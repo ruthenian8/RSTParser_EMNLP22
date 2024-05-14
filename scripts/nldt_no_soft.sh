@@ -4,7 +4,7 @@ set -x
 # OPTIONS
 DATA_DIR=./data/NLDT
 SAVE_DIR=./models/NLDT
-PARSER_TYPE=shift_reduce_v1
+PARSER_TYPE=shift_reduce_v2
 BERT_TYPE=microsoft/mdeberta-v3-base
 LR=1e-5
 NUM_GPUS=1

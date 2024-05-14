@@ -4,7 +4,7 @@ set -x
 # OPTIONS
 DATA_DIR=./data/RSTDT
 SAVE_DIR=./models/RSTDT
-PARSER_TYPE=shift_reduce_v1
+PARSER_TYPE=shift_reduce_v2
 BERT_TYPE=microsoft/mdeberta-v3-base
 LR=1e-5
 NUM_GPUS=1
