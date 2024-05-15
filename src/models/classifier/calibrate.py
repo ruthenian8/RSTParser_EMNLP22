@@ -123,7 +123,7 @@ def get_soft_labels(conf_matrix, label_idx, label_2_idx, confidence, num_classes
         num_classes (int): Number of classes.
     """
     calibrated_confidence = calculate_calibrated_confidence(conf_matrix, label_idx, confidence, num_classes)
-    other_confidence = calculate_calibrated_confidence(conf_matrix.transpose(0, 1), label_2_idx, confidence, num_classes)
+    other_confidence = calculate_calibrated_confidence(conf_matrix.transpose(0, 1), label_2_idx, 1-confidence, num_classes)
 
     calibrated_confidences = torch.stack([calibrated_confidence, other_confidence], dim=1)  # Two annotators with their calibrated confidences for the primary class
 
