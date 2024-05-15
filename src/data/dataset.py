@@ -78,7 +78,7 @@ class Dataset(torch.utils.data.Dataset):
 
 
 class RSTDT(Dataset):
-    confidence = 0.630447
+    confidence = 1
     relation_vocab = vocab(
         Counter(
             [
@@ -210,7 +210,7 @@ class PCCDataset(RSTDT):
 
 
 class NLDT(PCCDataset):
-    confidence = 0.54794
+    confidence = 1
 
 
 class InstrDT(Dataset):

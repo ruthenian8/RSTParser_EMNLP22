@@ -7,6 +7,7 @@ from data.doc import Doc
 from models.classifier import ShiftReduceClassifierBase
 from models.classifier.linear import FeedForward
 from models.classifier.calibrate import get_soft_labels, csv_to_cm
+# from models.classifier.calibrate import calculate_calibrated_confidence
 
 
 class ShiftReduceClassifierV2(ShiftReduceClassifierBase):
@@ -87,6 +88,11 @@ class ShiftReduceClassifierV2(ShiftReduceClassifierBase):
         act_loss = self.xent_loss(output["act_scores"], act_idx)
 
         if self.use_soft_labels:
+            # calibrated_prob_scores = calculate_calibrated_confidence(self.confusion_matrix, ful_idx, self.DATASET.confidence, num_classes=len(self.ful_vocab))
+            # scores = torch.zeros_like(output["ful_scores"]).to("cuda:0")
+            # scores[torch.arange(ful_idx.size(0)), sec_idx] = 1 - calibrated_prob_scores
+            # scores[torch.arange(ful_idx.size(0)), ful_idx] = calibrated_prob_scores
+            # ful_loss = self.xent_loss_full(output["ful_scores"],scores)
             calibrated_prob_scores = get_soft_labels(
                 self.confusion_matrix,
                 ful_idx,
