@@ -84,8 +84,7 @@ class ShiftReduceClassifierV2(ShiftReduceClassifierBase):
         act_loss = self.xent_loss(output["act_scores"], act_idx)
         ful_loss = self.xent_loss(output["ful_scores"], ful_idx)
         if self.use_soft_labels:
-            invalid_predictions = torch.where(torch.argmax(output["ful_scores"], dim=1) != ful_idx)
-            ful_loss[invalid_predictions] = ful_loss[invalid_predictions] * loss_factor[invalid_predictions]   
+            ful_loss = ful_loss * loss_factor[0]
 
         if torch.all(ful_idx == self.pad_idx):
             # if action is shift, there are no nuc and relation labels
