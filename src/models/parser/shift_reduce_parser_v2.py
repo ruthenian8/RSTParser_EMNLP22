@@ -43,10 +43,9 @@ class ShiftReduceParserV2(ShiftReduceParserBase):
                 label = "<pad>" if nuc == rel == "<pad>" else ":".join([nuc, rel])
                 act_idx = act_vocab[act]
                 ful_idx = ful_vocab[label]
-                sec_idx = ful_vocab[sec] if sec is not None and sec in ful_vocab else self.classifier.pad_idx
                 org_feat = self.get_organization_features(s1, s2, q1, doc)
                 xs.append({"s1": s1, "s2": s2, "q1": q1})
-                ys.append({"act": act_idx, "ful": ful_idx, "sec": sec_idx})
+                ys.append({"act": act_idx, "ful": ful_idx, "sec": sec})
                 fs.append({"org": org_feat})
                 state.operate(act, nuc, rel)
 

@@ -6,9 +6,7 @@ from data.batch import Batch
 from data.doc import Doc
 from models.classifier import ShiftReduceClassifierBase
 from models.classifier.linear import FeedForward
-from models.classifier.calibrate import get_soft_labels, csv_to_cm
-# from models.classifier.calibrate import calculate_calibrated_confidence
-
+from models.classifier.calibrate import csv_to_cm
 
 class ShiftReduceClassifierV2(ShiftReduceClassifierBase):
     def __init__(self, use_soft_labels: bool, confusion_matrix_file: str, *args, **kwargs):
@@ -33,7 +31,6 @@ class ShiftReduceClassifierV2(ShiftReduceClassifierBase):
         pad_idx = self.act_vocab["<pad>"]
         self.pad_idx = pad_idx
         self.xent_loss = nn.CrossEntropyLoss(ignore_index=pad_idx)
-        self.xent_loss_full = nn.CrossEntropyLoss()
 
         self.use_soft_labels = use_soft_labels
         self.confusion_matrix = csv_to_cm(confusion_matrix_file, self.ful_vocab).to("cuda:0")
@@ -83,26 +80,12 @@ class ShiftReduceClassifierV2(ShiftReduceClassifierBase):
         labels = batch.label
         act_idx = labels["act"]
         ful_idx = labels["ful"]
-        sec_idx = labels["sec"]
-        calibrated_prob_scores = None
+        loss_factor = labels["sec"]
         act_loss = self.xent_loss(output["act_scores"], act_idx)
-
+        ful_loss = self.xent_loss(output["ful_scores"], ful_idx)
         if self.use_soft_labels:
-            # calibrated_prob_scores = calculate_calibrated_confidence(self.confusion_matrix, ful_idx, self.DATASET.confidence, num_classes=len(self.ful_vocab))
-            # scores = torch.zeros_like(output["ful_scores"]).to("cuda:0")
-            # scores[torch.arange(ful_idx.size(0)), sec_idx] = 1 - calibrated_prob_scores
-            # scores[torch.arange(ful_idx.size(0)), ful_idx] = calibrated_prob_scores
-            # ful_loss = self.xent_loss_full(output["ful_scores"],scores)
-            calibrated_prob_scores = get_soft_labels(
-                self.confusion_matrix,
-                ful_idx,
-                sec_idx,
-                self.DATASET.confidence,
-                num_classes=len(self.ful_vocab),
-            )
-            ful_loss = self.xent_loss_full(output["ful_scores"], calibrated_prob_scores)
-        else:
-            ful_loss = self.xent_loss(output["ful_scores"], ful_idx)
+            invalid_predictions = torch.where(torch.argmax(output["ful_scores"], dim=1) != ful_idx)
+            ful_loss[invalid_predictions] = ful_loss[invalid_predictions] * loss_factor[invalid_predictions]   
 
         if torch.all(ful_idx == self.pad_idx):
             # if action is shift, there are no nuc and relation labels

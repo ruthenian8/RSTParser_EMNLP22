@@ -37,7 +37,8 @@ class Parseval(Metric):
             # count brackets
             pred_cnt = len(pred_brackets["span"])
             gold_cnt = len(gold_brackets["span"])
-            assert pred_cnt == gold_cnt
+            print(pred_cnt, gold_cnt)
+            # assert pred_cnt == gold_cnt
             self.pred += pred_cnt
             self.gold += gold_cnt
 

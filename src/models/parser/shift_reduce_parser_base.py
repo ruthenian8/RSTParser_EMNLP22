@@ -8,6 +8,7 @@ from models.classifier import ShiftReduceClassifierBase
 from models.parser import ParserBase
 from models.parser.organization_feature import OrganizationFeature as OrgFeat
 from models.parser.shift_reduce_state import ShiftReduceState
+from metrics.original_parseval import OriginalParseval
 
 
 class ShiftReduceParserBase(ParserBase):
@@ -73,11 +74,11 @@ class ShiftReduceParserBase(ParserBase):
 
     def generate_action_sequence(self, tree: AttachTree, tree_2: Optional[AttachTree] = None):
         act_list, nuc_list, rel_list, secondary_labels = [], [], [], []
-        brackets = None
-        bracket_dict = None
+        original_parseval = OriginalParseval()
+        op_value = 1.0
         if tree_2 is not None:
-            brackets = tree_2.get_brackets(["full"])["full"]
-            bracket_dict = {span: (nuc, rel) for span, nuc, rel in brackets}
+            original_parseval.update([tree], [tree_2])
+            op_value = original_parseval.compute()["OriginalParseval-F"]
 
         for tp in tree.treepositions("postorder"):
             node = tree[tp]
@@ -100,16 +101,7 @@ class ShiftReduceParserBase(ParserBase):
             else:
                 raise ValueError("Input tree is not binarized.")
 
-            edu_indices = [int(idx) for idx in node.leaves()]
-            span = (edu_indices[0], edu_indices[-1] + 1)
-            if tree_2 is None:
-                secondary_labels.append(None)
-            else:
-                if span in bracket_dict:
-                    nuc, rel = bracket_dict[span]
-                    secondary_labels.append(f"{nuc}:{rel}")
-                else:
-                    secondary_labels.append("<pad>")
+            secondary_labels.append(op_value)
 
         return act_list, nuc_list, rel_list, secondary_labels
 

@@ -195,7 +195,7 @@ class AttachTree(Tree):
                 brackets["nuc"].append((span, ns))
             if "span" in eval_types:
                 brackets["span"].append((span))
-            immediate_children = (" ".join(node[(0,)].leaves()), " ".join(node[(1,)].leaves()))
-            brackets["children"][span] = immediate_children
+            # immediate_children = (" ".join(node[(0,)].leaves()), " ".join(node[(1,)].leaves()))
+            # brackets["children"][span] = immediate_children
 
         return brackets
